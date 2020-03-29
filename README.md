@@ -1,1 +1,1 @@
-# Ninja-Smoothies
+# ninja-smoothies
