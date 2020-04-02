@@ -5,15 +5,46 @@
       color="primary"
       dark
     >
-      <div class="d-flex align-center">
-        <router-link :to="{ name: 'Home' }">
+      <v-row
+        no-gutter
+      >
+        <v-col
+          cols="6"
+          class="d-flex justify-start"
+        >
+          <router-link :to="{ name: 'HomeSmoothies' }">
+            <v-btn
+              text
+              bottom
+            >
+              Smoothie collection
+            </v-btn>
+          </router-link>
+          <router-link :to="{ name: 'HomeMap' }">
+            <v-btn
+              text
+              bottom
+            >
+              Map View
+            </v-btn>
+          </router-link>
+        </v-col>
+        <v-col
+          cols="6"
+          class="d-flex justify-end"
+        >
           <v-btn
-            bottom
-            color="blue"
+            text
+            @click="formCall"
           >
-            Smoothie collection
+            Sign-up
           </v-btn>
-        </router-link>
+          <v-btn
+            text
+          >
+            Login
+          </v-btn>
+        </v-col>
         <router-link :to="{ name: 'AddSmoothie' }">
           <v-btn
             absolute
@@ -28,7 +59,7 @@
             </v-icon>
           </v-btn>
         </router-link>
-      </div>
+      </v-row>
     </v-app-bar>
   </div>
 </template>
@@ -36,5 +67,10 @@
 
 export default {
   name: 'Navbar',
+  methods: {
+    formCall() {
+      this.$store.dispatch('user/setValue', { loginForm: true });
+    },
+  },
 };
 </script>

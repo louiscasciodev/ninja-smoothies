@@ -60,14 +60,14 @@
 import db from '@/firebase/init';
 
 export default {
-  name: 'HelloWorld',
+  name: 'SmoothiesCards',
   data() {
     return {
       smoothies: [],
     };
   },
   created() {
-    this.$store.dispatch('clear');
+    this.$store.dispatch('smoothie/clear');
     db.collection('smoothies').get()
       .then((snapshot) => {
         snapshot.forEach((doc) => {

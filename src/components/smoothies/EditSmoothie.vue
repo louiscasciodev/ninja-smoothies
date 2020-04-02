@@ -3,7 +3,7 @@
     <v-col cols="12">
       <v-row class="justify-center align-center">
         <p class="headline">
-          Add a smoothie !
+          Edit {{ title }} !
         </p>
       </v-row>
       <v-row class="justify-center align-center">
@@ -37,9 +37,9 @@
             <v-btn
               color="success"
               class="mb-4"
-              @click="AddSmoothie"
+              @click="EditSmoothie"
             >
-              Validate
+              Update Smoothie
             </v-btn>
           </div>
           <div class="text-center">
@@ -62,16 +62,20 @@
     </v-col>
   </v-container>
 </template>
-
 <script>
-import db from '@/firebase/init';
 import slugify from 'slugify';
 import { mapActions, mapState } from 'vuex';
+import db from '@/firebase/init';
 
 export default {
-  name: 'AddSmoothie',
+  name: 'EditSmoothie',
+  data() {
+    return {
+      smoothieId: null,
+    };
+  },
   computed: {
-    ...mapState({
+    ...mapState('smoothie', {
       feedback: (state) => state.feedback,
       title: (state) => state.smoothie.title,
       ing: (state) => state.smoothie.ing,
@@ -79,28 +83,36 @@ export default {
     }),
   },
   created() {
-    this.$store.dispatch('clear');
+    this.$store.dispatch('smoothie/clear');
+    const ref = db.collection('smoothies').where('slug', '==', this.$route.params.smoothie_slug);
+    ref.get().then((snapshot) => {
+      snapshot.forEach((doc) => {
+        const smoothie = doc.data();
+        this.smoothieId = doc.id;
+        this.$store.dispatch('smoothie/setSmoothie', { ...smoothie });
+      });
+    });
   },
   methods: {
-    ...mapActions({ setSmoothie: 'setSmoothie' }),
+    ...mapActions({ setSmoothie: 'smoothie/setSmoothie' }),
     setTitle(value) { this.setSmoothie({ title: value }); },
     setIng(value) { this.setSmoothie({ ing: value }); },
 
-    AddSmoothie() {
+    EditSmoothie() {
       if (this.title && this.ingredients.length >= 1) {
         const sluged = slugify(this.title, {
           replacement: '-',
           remove: /[$*_~.()'"!\-:@]/g,
           lower: true,
         });
-        this.$store.dispatch('setSmoothie', { slug: sluged })
-          .then(() => db.collection('smoothies').add({
+        this.$store.dispatch('smoothie/setSmoothie', { slug: sluged })
+          .then(() => db.collection('smoothies').doc(this.smoothieId).update({
             title: this.title,
             ingredients: this.ingredients,
             slug: sluged,
           }))
-          .then(() => this.$router.push({ name: 'Home' }))
-          .then(() => this.$store.dispatch('clear'))
+          .then(() => this.$router.push({ name: 'HomeSmoothies' }))
+          .then(() => this.$store.dispatch('smoothie/clear'))
           .catch((err) => console.log(err));
       } else if (this.ingredients.length < 1) {
         const message = 'You must enter at least one ingredient';
@@ -112,8 +124,8 @@ export default {
     },
     addIng(value) {
       if (value) {
-        this.$store.dispatch('addIngredient', value);
-        this.$store.dispatch('setSmoothie', { ing: null });
+        this.$store.dispatch('smoothie/addIngredient', value);
+        this.$store.dispatch('smoothie/setSmoothie', { ing: null });
         if (this.ingredients.length >= 1 && this.ingredients.length < 10) {
           this.setFeedback(null);
         }
@@ -123,7 +135,7 @@ export default {
       }
     },
     deleteIng(index) {
-      this.$store.dispatch('deleteIngredient', index);
+      this.$store.dispatch('smoothie/deleteIngredient', index);
       if (this.ingredients.length >= 1 && this.ingredients.length < 10) {
         this.setFeedback(null);
       }
@@ -137,12 +149,11 @@ export default {
       return false;
     },
     setFeedback(message) {
-      this.$store.dispatch('setValue', { feedback: message });
+      this.$store.dispatch('smoothie/setValue', { feedback: message });
     },
   },
 };
 </script>
-
 <style lang="scss" scoped>
 .add-form{
   width: 400px;
