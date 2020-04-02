@@ -1,11 +1,5 @@
-import { mapGetters } from 'vuex';
 
 export default {
-  computed: {
-    ...mapGetters({
-      current: 'subscriptions/current',
-    }),
-  },
   methods: {
     hs_addIng(value) {
       if (value) {

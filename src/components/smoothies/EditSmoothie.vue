@@ -37,7 +37,7 @@
             <v-btn
               color="success"
               class="mb-4"
-              @click="EditSmoothie"
+              @click="editSmoothie"
             >
               Update Smoothie
             </v-btn>
@@ -62,6 +62,7 @@
     </v-col>
   </v-container>
 </template>
+
 <script>
 import db from '@/firebase/init';
 import { mapActions, mapState } from 'vuex';
@@ -100,7 +101,7 @@ export default {
     setTitle(value) { this.setSmoothie({ title: value }); },
     setIng(value) { this.setSmoothie({ ing: value }); },
 
-    EditSmoothie() {
+    editSmoothie() {
       if (this.title && this.ingredients.length >= 1) {
         const sluged = slugify(this.title, {
           replacement: '-',
@@ -127,6 +128,7 @@ export default {
   },
 };
 </script>
+
 <style lang="scss" scoped>
 .add-form{
   width: 400px;

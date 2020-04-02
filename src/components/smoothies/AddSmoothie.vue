@@ -37,7 +37,7 @@
             <v-btn
               color="success"
               class="mb-4"
-              @click="AddSmoothie"
+              @click="addSmoothie"
             >
               Validate
             </v-btn>
@@ -88,7 +88,7 @@ export default {
     setTitle(value) { this.setSmoothie({ title: value }); },
     setIng(value) { this.setSmoothie({ ing: value }); },
 
-    AddSmoothie() {
+    addSmoothie() {
       if (this.title && this.ingredients.length >= 1) {
         const sluged = slugify(this.title, {
           replacement: '-',
