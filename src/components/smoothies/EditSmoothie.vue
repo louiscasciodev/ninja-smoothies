@@ -20,10 +20,10 @@
           <v-text-field
             label="Grab an ingredient & press #enter"
             required
-            :disabled="maxIngredients()"
+            :disabled="hs_maxIngredients()"
             :value="ing"
             @input="setIng"
-            @keydown.enter.tab.prevent="addIng(ing)"
+            @keydown.enter.tab.prevent="hs_addIng(ing)"
           />
           <v-alert
             v-if="feedback"
@@ -51,7 +51,7 @@
               {{ item }}
               <v-icon
                 right
-                @click="deleteIng(index)"
+                @click="hs_deleteIng(index)"
               >
                 backspace
               </v-icon>
@@ -63,12 +63,14 @@
   </v-container>
 </template>
 <script>
-import slugify from 'slugify';
-import { mapActions, mapState } from 'vuex';
 import db from '@/firebase/init';
+import { mapActions, mapState } from 'vuex';
+import slugify from 'slugify';
+import helpersSmoothie from '@/mixins/helpersSmoothie';
 
 export default {
   name: 'EditSmoothie',
+  mixins: [helpersSmoothie],
   data() {
     return {
       smoothieId: null,
@@ -116,40 +118,11 @@ export default {
           .catch((err) => console.log(err));
       } else if (this.ingredients.length < 1) {
         const message = 'You must enter at least one ingredient';
-        this.setFeedback(message);
+        this.hs_setFeedback(message);
       } else {
         const message = 'You must enter a title';
-        this.setFeedback(message);
+        this.hs_setFeedback(message);
       }
-    },
-    addIng(value) {
-      if (value) {
-        this.$store.dispatch('smoothie/addIngredient', value);
-        this.$store.dispatch('smoothie/setSmoothie', { ing: null });
-        if (this.ingredients.length >= 1 && this.ingredients.length < 10) {
-          this.setFeedback(null);
-        }
-      } else {
-        const message = 'You must enter a value to add an ingredient';
-        this.setFeedback(message);
-      }
-    },
-    deleteIng(index) {
-      this.$store.dispatch('smoothie/deleteIngredient', index);
-      if (this.ingredients.length >= 1 && this.ingredients.length < 10) {
-        this.setFeedback(null);
-      }
-    },
-    maxIngredients() {
-      if (this.ingredients.length >= 10) {
-        const message = 'You can\'t add more than 10 ingredients';
-        this.setFeedback(message);
-        return true;
-      }
-      return false;
-    },
-    setFeedback(message) {
-      this.$store.dispatch('smoothie/setValue', { feedback: message });
     },
   },
 };

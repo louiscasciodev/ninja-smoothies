@@ -12,9 +12,7 @@
           min-height="200"
           class="home-card ma-3 pa-2"
         >
-          <v-card-actions
-            class="ma-0 pa-0"
-          >
+          <v-card-actions class="ma-0 pa-0">
             <v-spacer />
             <v-icon
               large
