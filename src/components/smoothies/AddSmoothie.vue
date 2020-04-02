@@ -3,7 +3,7 @@
     <v-col cols="12">
       <v-row class="justify-center align-center">
         <p class="headline">
-          Add a smoothie !
+          Adding {{ title }} !
         </p>
       </v-row>
       <v-row class="justify-center align-center">
