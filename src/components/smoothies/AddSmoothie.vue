@@ -1,9 +1,10 @@
+
 <template>
   <v-container fluid>
     <v-col cols="12">
       <v-row class="justify-center align-center">
         <p class="headline">
-          Add a smoothie !
+          Add {{ smoothie.title }} !
         </p>
       </v-row>
       <v-row class="justify-center align-center">
@@ -12,18 +13,16 @@
           class="add-form"
         >
           <v-text-field
+            v-model="smoothie.title"
             label="Smoothie Title"
             required
-            :value="title"
-            @input="setTitle"
           />
           <v-text-field
+            v-model="smoothie.ing"
             label="Grab an ingredient & press #enter"
             required
             :disabled="maxIngredients()"
-            :value="ing"
-            @input="setIng"
-            @keydown.enter.tab.prevent="addIng(ing)"
+            @keydown.enter.tab.prevent="addIng(smoothie.ing)"
           />
           <v-alert
             v-if="feedback"
@@ -37,14 +36,14 @@
             <v-btn
               color="success"
               class="mb-4"
-              @click="AddSmoothie"
+              @click="addSmoothie"
             >
-              Validate
+              Add Smoothie
             </v-btn>
           </div>
           <div class="text-center">
             <v-chip
-              v-for="(item, index) in ingredients"
+              v-for="(item, index) in smoothie.ingredients"
               :key="index"
               class="mx-2 my-1"
             >
@@ -62,47 +61,49 @@
     </v-col>
   </v-container>
 </template>
-
 <script>
-import db from '@/firebase/init';
 import slugify from 'slugify';
-import { mapActions, mapState } from 'vuex';
+import db from '@/firebase/init';
 
 export default {
   name: 'AddSmoothie',
-  computed: {
-    ...mapState('smoothie', {
-      feedback: (state) => state.feedback,
-      title: (state) => state.smoothie.title,
-      ing: (state) => state.smoothie.ing,
-      ingredients: (state) => state.smoothie.ingredients,
-    }),
+  data() {
+    return {
+      feedback: null,
+      smoothieId: null,
+      smoothie: {
+        title: null,
+        ingredients: [],
+        ing: null,
+        slug: null,
+      },
+    };
   },
   created() {
-    this.$store.dispatch('smoothie/clear');
+    const ref = db.collection('smoothies').where('slug', '==', this.$route.params.smoothie_slug);
+    ref.get().then((snapshot) => {
+      snapshot.forEach((doc) => {
+        this.smoothie = doc.data();
+        this.smoothieId = doc.id;
+      });
+    });
   },
   methods: {
-    ...mapActions({ setSmoothie: 'smoothie/setSmoothie' }),
-    setTitle(value) { this.setSmoothie({ title: value }); },
-    setIng(value) { this.setSmoothie({ ing: value }); },
-
-    AddSmoothie() {
-      if (this.title && this.ingredients.length >= 1) {
-        const sluged = slugify(this.title, {
+    addSmoothie() {
+      if (this.smoothie.title && this.smoothie.ingredients.length >= 1) {
+        const sluged = slugify(this.smoothie.title, {
           replacement: '-',
           remove: /[$*_~.()'"!\-:@]/g,
           lower: true,
         });
-        this.$store.dispatch('smoothie/setSmoothie', { slug: sluged })
-          .then(() => db.collection('smoothies').add({
-            title: this.title,
-            ingredients: this.ingredients,
-            slug: sluged,
-          }))
+        db.collection('smoothies').add({
+          title: this.smoothie.title,
+          ingredients: this.smoothie.ingredients,
+          slug: sluged,
+        })
           .then(() => this.$router.push({ name: 'HomeSmoothies' }))
-          .then(() => this.$store.dispatch('smoothie/clear'))
           .catch((err) => console.log(err));
-      } else if (this.ingredients.length < 1) {
+      } else if (this.smoothie.ingredients.length < 1) {
         const message = 'You must enter at least one ingredient';
         this.setFeedback(message);
       } else {
@@ -112,9 +113,9 @@ export default {
     },
     addIng(value) {
       if (value) {
-        this.$store.dispatch('smoothie/addIngredient', value);
-        this.$store.dispatch('smoothie/setSmoothie', { ing: null });
-        if (this.ingredients.length >= 1 && this.ingredients.length < 10) {
+        this.smoothie.ingredients.push(value);
+        this.smoothie.ing = null;
+        if (this.smoothie.ingredients.length >= 1 && this.smoothie.ingredients.length < 10) {
           this.setFeedback(null);
         }
       } else {
@@ -123,13 +124,13 @@ export default {
       }
     },
     deleteIng(index) {
-      this.$store.dispatch('smoothie/deleteIngredient', index);
-      if (this.ingredients.length >= 1 && this.ingredients.length < 10) {
+      this.smoothie.ingredients.splice(index, 1);
+      if (this.smoothie.ingredients.length >= 1 && this.smoothie.ingredients.length < 10) {
         this.setFeedback(null);
       }
     },
     maxIngredients() {
-      if (this.ingredients.length >= 10) {
+      if (this.smoothie.ingredients.length >= 10) {
         const message = 'You can\'t add more than 10 ingredients';
         this.setFeedback(message);
         return true;
@@ -137,12 +138,11 @@ export default {
       return false;
     },
     setFeedback(message) {
-      this.$store.dispatch('smoothie/setValue', { feedback: message });
+      this.feedback = message;
     },
   },
 };
 </script>
-
 <style lang="scss" scoped>
 .add-form{
   width: 400px;

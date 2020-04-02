@@ -67,7 +67,6 @@ export default {
     };
   },
   created() {
-    this.$store.dispatch('smoothie/clear');
     db.collection('smoothies').get()
       .then((snapshot) => {
         snapshot.forEach((doc) => {
