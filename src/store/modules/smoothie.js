@@ -46,7 +46,6 @@ const mutations = {
   },
   DELETE_INGREDIENT(state, value) {
     state.smoothie.ingredients.splice(value, 1);
-    console.log(value);
   },
 };
 
