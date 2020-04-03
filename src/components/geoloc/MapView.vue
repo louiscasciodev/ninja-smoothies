@@ -10,18 +10,56 @@
   </div>
 </template>
 <script>
+import firebase from 'firebase';
+import db from '@/firebase/init';
 
 export default {
   /* eslint-disable no-undef */
   name: 'MapView',
   data() {
     return {
-      lat: 48,
-      lng: 2,
+      lat: 40,
+      lng: 20,
     };
   },
   mounted() {
+    // get current user
+    const user = firebase.auth().currentUser;
+
+    // get user geolocation
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition((pos) => {
+        this.lat = pos.coords.latitude;
+        this.lng = pos.coords.longitude;
+
+        // find the user record and then update geocoords
+        if (user) {
+          db.collection('users').where('user_id', '==', user.uid).get()
+            .then((snapshot) => {
+              snapshot.forEach((doc) => {
+                db.collection('users').doc(doc.id).update({
+                  geolocation: {
+                    lat: pos.coords.latitude,
+                    lng: pos.coords.longitude,
+                  },
+                });
+              });
+            })
+            .then(() => {
+              this.renderMap();
+            });
+        }
+        this.renderMap();
+      }, (err) => {
+        console.log(err);
+        this.renderMap();
+      }, { maximumAge: 60000, timout: 3000 });
+    } else {
+      // position center by default values
+      this.renderMap();
+    }
     this.renderMap();
+    console.log(firebase.auth().currentUser);
   },
   methods: {
     renderMap() {

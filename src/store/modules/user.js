@@ -3,9 +3,12 @@
 /* eslint no-shadow: ["error", { "allow": ["state", "getters"] }] */
 
 const state = {
+  signUpForm: false,
   loginForm: false,
+  feedback: null,
   infos: {
     pseudo: null,
+    slug: null,
     email: null,
     password: null,
   },
@@ -21,6 +24,15 @@ const actions = {
 
 const mutations = {
   CLEAR(state) {
+    Object.assign(state, {
+      feedback: null,
+      infos: {
+        pseudo: null,
+        slug: null,
+        email: null,
+        password: null,
+      },
+    });
   },
   SET_VALUE(state, object) {
     const [key] = Object.keys(object);

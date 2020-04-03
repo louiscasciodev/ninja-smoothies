@@ -92,7 +92,7 @@ export default {
       if (this.title && this.ingredients.length >= 1) {
         const sluged = slugify(this.title, {
           replacement: '-',
-          remove: /[$*_~.()'"!\-:@]/g,
+          remove: /[$*_+~.()'"!\-:@]/g,
           lower: true,
         });
         this.$store.dispatch('smoothie/setSmoothie', { slug: sluged })

@@ -1,5 +1,20 @@
 <template>
   <v-container fluid>
+    <router-link
+      :to="{ name: 'AddSmoothie' }"
+    >
+      <v-btn
+        v-if="user"
+        class="add-button"
+        dark
+        fab
+        color="pink"
+      >
+        <v-icon large>
+          add
+        </v-icon>
+      </v-btn>
+    </router-link>
     <v-col cols="12">
       <v-row
         justify="center"
@@ -15,6 +30,7 @@
           <v-card-actions class="ma-0 pa-0">
             <v-spacer />
             <v-icon
+              v-if="user"
               large
               @click="deleteSmoothies(smoothie.id)"
             >
@@ -35,6 +51,7 @@
           </v-card-text>
           <router-link :to="{ name: 'EditSmoothie', params: {smoothie_slug: smoothie.slug} }">
             <v-btn
+              v-if="user"
               absolute
               dark
               small
@@ -55,16 +72,24 @@
 </template>
 
 <script>
+import firebase from 'firebase';
 import db from '@/firebase/init';
 
 export default {
   name: 'SmoothiesCards',
   data() {
     return {
+      user: null,
       smoothies: [],
     };
   },
   created() {
+    // let user = firebase.auth().currentUser;
+    firebase.auth().onAuthStateChanged((user) => {
+      if (user) {
+        this.user = user;
+      } else this.user = null;
+    });
     this.$store.dispatch('smoothie/clear');
     db.collection('smoothies').get()
       .then((snapshot) => {
@@ -88,5 +113,10 @@ export default {
 <style lang="scss" scoped>
 .home-card{
   width: 300px;
+}
+.add-button{
+  position: absolute;
+  top: 20px;
+  right: 20px;
 }
 </style>
