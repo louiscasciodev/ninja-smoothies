@@ -64,7 +64,7 @@
 </template>
 
 <script>
-// import db from '@/firebase/init';
+import db from '@/firebase/init';
 import firebase from 'firebase';
 import { mapActions, mapState } from 'vuex';
 
@@ -84,6 +84,21 @@ export default {
     setPassword(value) { this.setInfos({ password: value }); },
     formClose() {
       this.$store.dispatch('user/setValue', { loginForm: false });
+      // get current user
+      const user = firebase.auth().currentUser;
+      this.user = user;
+      // {{ this.user.displayName }} ex to access to firebase auth data
+
+      // get pseudo with user.uid from session
+      if (user) {
+        db.collection('users').where('user_id', '==', user.uid).get()
+          .then((snapshot) => {
+            snapshot.forEach((doc) => {
+              const data = doc.data();
+              this.$store.dispatch('user/setInfos', { pseudo: data.pseudo });
+            });
+          });
+      }
     },
     login() {
       if (this.email && this.password) {

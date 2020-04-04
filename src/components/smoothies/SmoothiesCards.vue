@@ -116,6 +116,7 @@ export default {
 }
 .add-button{
   position: absolute;
+  z-index: 1;
   top: 20px;
   right: 20px;
 }
