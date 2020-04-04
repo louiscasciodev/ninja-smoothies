@@ -115,12 +115,12 @@ export default {
     },
     logOut() {
       firebase.auth().signOut().then(() => {
-        const path = '/map';
-        if (this.$route.path !== path) {
-          this.$router.push(path);
-        }
-        // we can also catch empty fct like this
-        // this.$router.push('/map').catch(() => {});
+        this.$router.push({ name: 'HomeMap' }).catch(() => {});
+        // we can also do like this
+        // const path = '/map';
+        // if (this.$route.path !== path) {
+        //   this.$router.push(path);
+        // }
       });
     },
   },

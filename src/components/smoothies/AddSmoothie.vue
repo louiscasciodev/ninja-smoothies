@@ -53,7 +53,7 @@
                 right
                 @click="hs_deleteIng(index)"
               >
-                backspace
+                fas fa-backspace
               </v-icon>
             </v-chip>
           </div>
@@ -101,7 +101,7 @@ export default {
             ingredients: this.ingredients,
             slug: sluged,
           }))
-          .then(() => this.$router.push({ name: 'HomeSmoothies' }))
+          .then(() => this.$router.push({ name: 'HomeSmoothies' }).catch(() => {}))
           .then(() => this.$store.dispatch('smoothie/clear'))
           .catch((err) => console.log(err));
       } else if (this.ingredients.length < 1) {

@@ -71,6 +71,26 @@ export default {
         minZoom: 3,
         streetViewControl: false,
       });
+      db.collection('users').get().then((users) => {
+        users.docs.forEach((doc) => {
+          const data = doc.data();
+          if (data.geolocation) {
+          // eslint-disable-next-line no-unused-vars
+            const marker = new google.maps.Marker({
+              position: {
+                lat: data.geolocation.lat,
+                lng: data.geolocation.lng,
+              },
+              map,
+            });
+            // add a click event to marker
+            marker.addListener('click', () => {
+              this.$router.push({ name: 'ViewProfile', params: { id: doc.id } });
+              console.log(doc.id);
+            });
+          }
+        });
+      });
     },
   },
 };

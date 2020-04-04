@@ -3,6 +3,7 @@ import VueRouter from 'vue-router';
 import { AddSmoothie, EditSmoothie } from '@/components/smoothies';
 import firebase from 'firebase';
 import store from '@/store';
+import ViewProfile from '@/components/geoloc/ViewProfile.vue';
 import HomeMap from '../views/HomeMap.vue';
 import HomeSmoothies from '../views/HomeSmoothies.vue';
 
@@ -31,6 +32,14 @@ const routes = [
     path: '/edit/:smoothie_slug',
     name: 'EditSmoothie',
     component: EditSmoothie,
+    meta: {
+      requiresAuth: true,
+    },
+  },
+  {
+    path: '/profile/:id',
+    name: 'ViewProfile',
+    component: ViewProfile,
     meta: {
       requiresAuth: true,
     },

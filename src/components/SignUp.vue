@@ -125,12 +125,7 @@ export default {
               //   });
               // })
               .then(() => this.formClose())
-              .then(() => {
-                const path = '/';
-                if (this.$route.path !== path) {
-                  this.$router.push(path);
-                }
-              })
+              .then(() => this.$router.push({ name: 'HomeSmoothies' }).catch(() => {}))
               .catch((err) => {
                 this.setFeedback(err.message);
               });

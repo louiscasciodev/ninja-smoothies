@@ -5,13 +5,13 @@
     >
       <v-btn
         v-if="user"
-        class="add-button"
+        class="add-btn"
         dark
         fab
         color="pink"
       >
-        <v-icon large>
-          add
+        <v-icon>
+          fas fa-plus
         </v-icon>
       </v-btn>
     </router-link>
@@ -23,7 +23,6 @@
         <v-card
           v-for="smoothie in smoothies"
           :key="smoothie.id"
-          hover
           min-height="200"
           class="home-card ma-3 pa-2"
         >
@@ -31,10 +30,10 @@
             <v-spacer />
             <v-icon
               v-if="user"
-              large
+              color="grey"
               @click="deleteSmoothies(smoothie.id)"
             >
-              delete_outline
+              fas fa-minus-circle
             </v-icon>
           </v-card-actions>
           <v-card-text>
@@ -60,8 +59,8 @@
               right
               color="pink"
             >
-              <v-icon>
-                create
+              <v-icon small>
+                fas fa-pen
               </v-icon>
             </v-btn>
           </router-link>
@@ -114,10 +113,17 @@ export default {
 .home-card{
   width: 300px;
 }
-.add-button{
+.add-btn{
   position: absolute;
   z-index: 1;
   top: 20px;
   right: 20px;
+}
+
+.delete-btn{
+    position: absolute;
+  top: 20px;
+  right: 20px;
+
 }
 </style>

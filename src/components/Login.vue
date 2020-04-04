@@ -104,7 +104,7 @@ export default {
       if (this.email && this.password) {
         firebase.auth().signInWithEmailAndPassword(this.email, this.password)
           .then(() => this.formClose())
-          .then(() => this.$router.push({ name: 'HomeSmoothies' }))
+          .then(() => this.$router.push({ name: 'HomeMap' }))
           .catch((err) => {
             this.setFeedback(err.message);
           });
